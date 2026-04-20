@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon --watch . --ext ts,prisma --exec ts-node index.ts",
+    "start": "ts-node index.ts",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:push": "prisma db push"
   },
   "keywords": [],
   "author": "",
@@ -13,13 +17,13 @@
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "prisma": "^7.7.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^25.6.0",
     "nodemon": "^3.1.14",
-    "prisma": "^7.7.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   }

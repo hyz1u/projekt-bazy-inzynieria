@@ -11,3 +11,45 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum MedicalRole {
+  DOCTOR
+  NURSE
+}
+
+enum StatusKey {
+  STABLE
+  OBSERVATION
+  POST_OP
+  RECOVERY
+  DISCHARGE_SOON
+}
+
+model Patient {
+  id            String        @id @default(cuid())
+  pesel         String        @unique
+  fullName      String
+  ward          String
+  room          String
+  familyToken   String
+  tokenIssuedAt DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  statusEntries StatusEntry[]
+
+  @@index([pesel])
+}
+
+model StatusEntry {
+  id          String      @id @default(cuid())
+  patientId   String
+  statusKey   StatusKey
+  statusLabel String
+  note        String?
+  authorName  String
+  authorRole  MedicalRole
+  createdAt   DateTime    @default(now())
+  patient     Patient     @relation(fields: [patientId], references: [id], onDelete: Restrict)
+
+  @@index([patientId, createdAt(sort: Desc)])
+}
