@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-// Definiujemy interfejs dla danych formularza, aby nie polegać na inferencji
 interface PatientFormData {
   firstName: string;
   lastName: string;
@@ -39,7 +38,6 @@ export default function AddPatient() {
       alert(`Pacjent zarejestrowany! Token dla rodziny: ${data.accessToken}`);
       navigate('/recepcja');
     } catch (err: unknown) {
-      // Bezpieczne rzutowanie błędu z wykorzystaniem typu unknown
       if (err instanceof Error) {
         setError(err.message);
       } else {
