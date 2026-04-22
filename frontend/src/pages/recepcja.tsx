@@ -1,16 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-// --- 1. DEFINICJE TYPÓW (TYPESCRIPT) ---
-
 // Typ dla pojedynczego wpisu na osi czasu
 interface StatusUpdate {
   id: number;
   status: string;
-  createdAt: string; // Daty przesyłane przez internet z API zawsze stają się tekstem (tzw. ISO String)
+  createdAt: string; 
 }
 
-// Typ dla Pacjenta (zawiera podstawowe dane + tablicę jego statusów)
+// Typ dla Pacjenta
 interface Patient {
   id: number;
   firstName: string;
@@ -19,17 +17,14 @@ interface Patient {
   updates: StatusUpdate[];
 }
 
-// --- 2. GŁÓWNY KOMPONENT ---
-
 export default function ReceptionPanel() {
-  // Zastępujemy <any[]> naszym nowym typem <Patient[]>
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetch('http://localhost:3000/api/patients')
       .then(res => res.json())
-      .then((data: Patient[]) => { // Tutaj też upewniamy się, że to co przyszło to lista Pacjentów
+      .then((data: Patient[]) => {
         setPatients(data);
         setIsLoading(false);
       })
@@ -61,7 +56,6 @@ export default function ReceptionPanel() {
             </p>
           ) : (
             <div className="space-y-4">
-              {/* Usuwamy 'any' z (patient: any). TypeScript sam wie, że to 'Patient', bo użyliśmy patients.map */}
               {patients.map((patient) => (
                 <div key={patient.id} className="p-4 border-l-4 border-blue-500 bg-slate-50 rounded-r-lg">
                   <p className="font-bold text-lg">{patient.firstName} {patient.lastName}</p>
