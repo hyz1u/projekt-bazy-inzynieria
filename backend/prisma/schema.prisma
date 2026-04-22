@@ -4,10 +4,62 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
+}
+
+enum Role {
+  DOCTOR
+  NURSE
+  RECEPTIONIST
+}
+
+// status pacjentów
+enum PatientStatus {
+  STABLE          // Stabilny
+  IMPROVING       // Poprawa
+  POST_OP         // Po zabiegu
+  AWAITING_TESTS  // Oczekuje na badania
+  CRITICAL        // Krytyczny
+}
+
+// personel szpitala
+model User {
+  id            Int            @id @default(autoincrement())
+  username      String         @unique // np. p.kowalska
+  passwordHash  String         // hasło (wymaga zahaszowania np. bcryptem)
+  fullName      String         // np. lek. Jan Kowalski
+  role          Role           // rola z enuma wyżej
+  statusUpdates StatusUpdate[] // relacja: Wpisy na osi czasu dodane przez tę osobę
+}
+
+// pacjenci
+model Patient {
+  id            Int            @id @default(autoincrement())
+  pesel         String         @unique
+  firstName     String
+  lastName      String
+  accessToken   String?        @unique // Unikalny token dla rodziny
+  tokenExpires  DateTime?      // opcjonalne: czas ważności tokenu
+  createdAt     DateTime       @default(now())
+  updates       StatusUpdate[] // relacja: Wszystkie statusy przypisane do pacjenta (Oś czasu)
+}
+
+// wpisy na osi czasu
+model StatusUpdate {
+  id          Int           @id @default(autoincrement())
+  status      PatientStatus // wybór z listy
+  note        String?       @db.Text // krótka notatka
+  createdAt   DateTime      @default(now()) // zapis daty i godziny
+  
+  // połączenie wpisu z pacjentem
+  patientId   Int
+  patient     Patient       @relation(fields: [patientId], references: [id])
+  
+  // połączenie wpisu z lekarzem/pielęgniarką
+  authorId    Int
+  author      User          @relation(fields: [authorId], references: [id])
 }
