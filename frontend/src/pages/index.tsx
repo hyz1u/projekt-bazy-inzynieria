@@ -30,7 +30,7 @@ export default function MainMenu() {
             <span className="text-emerald-500 text-2xl group-hover:translate-x-1 transition-transform">→</span>
           </Link>
 
-          {/* Przycisk 3: Prowadzi do /recepcja (Tu już mamy podpiętą bazę!) */}
+          {/* Przycisk 3: Prowadzi do /recepcja*/}
           <Link to="/recepcja" className="w-full group flex items-center justify-between p-5 border-2 border-slate-100 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 rounded-xl transition-all duration-200">
             <div className="text-left">
               <h2 className="text-lg font-bold text-slate-800">Rejestracja / Recepcja</h2>
