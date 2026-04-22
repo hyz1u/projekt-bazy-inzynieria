@@ -14,7 +14,7 @@ export default function DoctorPanel() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           
-          {/* Akcja: Rejestracja nowego pacjenta */}
+          {/* Rejestracja nowego pacjenta */}
           <Link 
             to="/dodaj-pacjenta" 
             className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:border-emerald-300 hover:shadow-md transition-all group"
@@ -28,7 +28,7 @@ export default function DoctorPanel() {
             </p>
           </Link>
 
-          {/* Akcja: Aktualizacja statusu (Zarys funkcjonalności) */}
+          {/* Aktualizacja statusu*/}
           <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 opacity-60 cursor-not-allowed">
             <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
               <span className="text-blue-600 text-3xl font-bold">#</span>
