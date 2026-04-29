@@ -12,6 +12,9 @@ export default function AddPatient() {
   const [formData, setFormData] = useState<PatientFormData>({ firstName: '', lastName: '', pesel: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [patientToken, setPatientToken] = useState(''); // Przechowujemy sam token
+  const [copied, setCopied] = useState(false); // Czy skopiowano?
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,13 +33,17 @@ export default function AddPatient() {
       });
 
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Błąd rejestracji.');
 
-      if (!res.ok) {
-        throw new Error(data.error || 'Błąd zapisu danych na serwerze.');
-      }
+      const tokenFromServer = data.accessToken || (data.patient && data.patient.accessToken) || 'BŁĄD';
 
-      alert(`Pacjent zarejestrowany! Token dla rodziny: ${data.accessToken}`);
-      navigate('/recepcja');
+      setPatientToken(tokenFromServer);
+      setSuccessMessage(`Zarejestrowano pomyślnie!`);
+      
+      setTimeout(() => {
+        navigate('/lekarz');
+      }, 8000);
+
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -48,8 +55,60 @@ export default function AddPatient() {
     }
   };
 
+  const handleCopy = () => {
+    if (patientToken) {
+      navigator.clipboard.writeText(patientToken);
+      setCopied(true);
+      // Ukryj napis "Skopiowano" po 2 sekundach
+      setTimeout(() => setCopied(false), 4000);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+
+      {successMessage && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-xl">
+          <div className="bg-white p-10 md:p-14 rounded-[50px] shadow-2xl border-t-8 border-emerald-500 max-w-lg w-full mx-4 text-center transform animate-in fade-in zoom-in duration-300">
+            
+            <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">
+              ✓
+            </div>
+            
+            <h3 className="text-3xl font-black text-slate-800 mb-2">{successMessage}</h3>
+            <p className="text-slate-500 font-medium mb-8">Przekaż poniższy kod rodzinie pacjenta:</p>
+
+            {/* SEKCJA KODU I PRZYCISKU */}
+            <div className="relative group">
+              <div className="bg-slate-100 p-6 rounded-3xl mb-4 flex items-center justify-between border-2 border-slate-200 group-hover:border-emerald-400 transition-colors">
+                <span className="text-4xl font-mono font-black text-slate-800 tracking-[0.2em]">
+                  {patientToken}
+                </span>
+                <button 
+                  onClick={handleCopy}
+                  type="button"
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white p-4 rounded-2xl transition-all shadow-md active:scale-90"
+                  title="Kopiuj do schowka"
+                >
+                  <span className="text-xl">📋</span>
+                </button>
+              </div>
+
+              {/* POWIADOMIENIE O SKOPIOWANIU */}
+              {copied && (
+                <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs py-1.5 px-4 rounded-full font-bold animate-bounce">
+                  Skopiowano do schowka!
+                </div>
+              )}
+            </div>
+
+            <div className="mt-12 text-slate-400 text-sm font-bold uppercase tracking-widest animate-pulse">
+              Powrót do panelu za chwilę...
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-xl w-full bg-white rounded-3xl shadow-xl overflow-hidden">
         
         <div className="bg-blue-600 p-8 text-white text-center">

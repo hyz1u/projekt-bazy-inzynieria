@@ -1,50 +1,45 @@
 import { Link } from 'react-router-dom';
 
-export default function MainMenu() {
+export default function HomePage() {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 font-sans">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 space-y-8">
-        
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-blue-600 tracking-tight">InfoPacjent</h1>
-          <p className="text-slate-500 mt-2 font-medium">System informacji o stanie pacjenta</p>
-        </div>
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans">
+      <div className="max-w-6xl w-full">
+        <header className="text-center mb-16">
+          <h1 className="text-5xl md:text-6xl font-black text-slate-800 mb-4 tracking-tight">
+            Info<span className="text-blue-600">Pacjent</span>
+          </h1>
+          <p className="text-xl text-slate-500 font-medium">System informacyjny Szpitala Wojewódzkiego</p>
+        </header>
 
-        <div className="space-y-4 mt-8">
-          
-          {/* Przycisk 1: Prowadzi do /rodzina */}
-          <Link to="/rodzina" className="w-full group flex items-center justify-between p-5 border-2 border-blue-100 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 rounded-xl transition-all duration-200">
-            <div className="text-left">
-              <h2 className="text-lg font-bold text-blue-900">Rodzina Pacjenta</h2>
-              <p className="text-sm text-blue-700 mt-1">Zaloguj się za pomocą tokenu</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          {/* KARTA: RODZINA */}
+          <Link 
+            to="/rodzina" 
+            className="group bg-white p-12 rounded-[40px] shadow-2xl border-2 border-transparent hover:border-blue-500 transition-all transform hover:-translate-y-2 flex flex-col items-center text-center"
+          >
+            <div className="w-24 h-24 bg-blue-100 rounded-3xl flex items-center justify-center mb-8 group-hover:bg-blue-200 transition-colors">
+              <span className="text-5xl">🏠</span>
             </div>
-            <span className="text-blue-500 text-2xl group-hover:translate-x-1 transition-transform">→</span>
+            <h2 className="text-4xl font-bold text-slate-800 mb-4">Strefa Rodziny</h2>
+            <p className="text-lg text-slate-500 leading-relaxed">
+              Sprawdź aktualny stan zdrowia bliskiej osoby.
+            </p>
           </Link>
 
-          {/* Przycisk 2: Prowadzi do /lekarz */}
-          <Link to="/lekarz" className="w-full group flex items-center justify-between p-5 border-2 border-emerald-100 bg-emerald-50 hover:bg-emerald-100 hover:border-emerald-300 rounded-xl transition-all duration-200">
-            <div className="text-left">
-              <h2 className="text-lg font-bold text-emerald-900">Personel Medyczny</h2>
-              <p className="text-sm text-emerald-700 mt-1">Dodaj nowy status leczenia</p>
+          {/* KARTA: PERSONEL */}
+          <Link 
+            to="/personel" 
+            className="group bg-slate-800 p-12 rounded-[40px] shadow-2xl border-2 border-transparent hover:border-slate-600 transition-all transform hover:-translate-y-2 flex flex-col items-center text-center text-white"
+          >
+            <div className="w-24 h-24 bg-slate-700 rounded-3xl flex items-center justify-center mb-8 group-hover:bg-slate-600 transition-colors">
+              <span className="text-5xl">🩺</span>
             </div>
-            <span className="text-emerald-500 text-2xl group-hover:translate-x-1 transition-transform">→</span>
+            <h2 className="text-4xl font-bold mb-4">Strefa Personelu</h2>
+            <p className="text-lg text-slate-400 leading-relaxed">
+              Panel dla lekarzy, pielęgniarek i recepcji.
+            </p>
           </Link>
-
-          {/* Przycisk 3: Prowadzi do /recepcja*/}
-          <Link to="/recepcja" className="w-full group flex items-center justify-between p-5 border-2 border-slate-100 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 rounded-xl transition-all duration-200">
-            <div className="text-left">
-              <h2 className="text-lg font-bold text-slate-800">Rejestracja / Recepcja</h2>
-              <p className="text-sm text-slate-600 mt-1">Podgląd statusów wszystkich pacjentów</p>
-            </div>
-            <span className="text-slate-500 text-2xl group-hover:translate-x-1 transition-transform">→</span>
-          </Link>
-
         </div>
-
-        <div className="text-center mt-8 pt-6 border-t border-slate-100">
-          <p className="text-xs text-slate-400">© 2026 Szpital Wojewódzki. Wersja MVP 1.0</p>
-        </div>
-
       </div>
     </div>
   );
