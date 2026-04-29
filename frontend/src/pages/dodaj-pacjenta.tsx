@@ -13,8 +13,8 @@ export default function AddPatient() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [patientToken, setPatientToken] = useState(''); // Przechowujemy sam token
-  const [copied, setCopied] = useState(false); // Czy skopiowano?
+  const [patientToken, setPatientToken] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -59,7 +59,6 @@ export default function AddPatient() {
     if (patientToken) {
       navigator.clipboard.writeText(patientToken);
       setCopied(true);
-      // Ukryj napis "Skopiowano" po 2 sekundach
       setTimeout(() => setCopied(false), 4000);
     }
   };
@@ -78,7 +77,6 @@ export default function AddPatient() {
             <h3 className="text-3xl font-black text-slate-800 mb-2">{successMessage}</h3>
             <p className="text-slate-500 font-medium mb-8">Przekaż poniższy kod rodzinie pacjenta:</p>
 
-            {/* SEKCJA KODU I PRZYCISKU */}
             <div className="relative group">
               <div className="bg-slate-100 p-6 rounded-3xl mb-4 flex items-center justify-between border-2 border-slate-200 group-hover:border-emerald-400 transition-colors">
                 <span className="text-4xl font-mono font-black text-slate-800 tracking-[0.2em]">
@@ -94,7 +92,6 @@ export default function AddPatient() {
                 </button>
               </div>
 
-              {/* POWIADOMIENIE O SKOPIOWANIU */}
               {copied && (
                 <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs py-1.5 px-4 rounded-full font-bold animate-bounce">
                   Skopiowano do schowka!

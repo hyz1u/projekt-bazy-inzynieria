@@ -5,8 +5,6 @@ export default function StaffLogin() {
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Odczytujemy intencję użytkownika (z jakiego przycisku tu trafił). 
-  // Zabezpieczenie: domyślnie przyjmujemy Lekarza, jeśli ktoś wejdzie z palca pod /logowanie
   const { role, title, path } = location.state || { role: 'DOCTOR', title: 'Lekarza', path: '/lekarz' };
 
   const [username, setUsername] = useState('');
@@ -35,7 +33,6 @@ export default function StaffLogin() {
       // Możemy zapisać dane użytkownika w pamięci przeglądarki na później
       localStorage.setItem('currentUser', JSON.stringify(data.user));
 
-      // Kierujemy do docelowego panelu!
       navigate(path);
       
     } catch (err: unknown) {

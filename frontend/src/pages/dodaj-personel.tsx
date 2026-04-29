@@ -26,19 +26,18 @@ export default function AddStaff() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Błąd rejestracji.');
 
-      // 2. ZAMIAST ALERTU USTAW ZMIENNĄ I OPÓŹNIJ NAWIGACJĘ
       setSuccessMessage(`Konto utworzone pomyślnie! Login: ${username}`);
       setTimeout(() => {
         navigate('/lekarz');
-      }, 2500); // Przeniesie po 2.5 sekundy
+      }, 2500); 
 
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Nieoczekiwany błąd.');
-      setIsSubmitting(false); // Zdejmujemy ładowanie tylko, gdy jest błąd. Jeśli jest sukces, zostawiamy wciśnięty przycisk, by uniknąć podwójnych kliknięć.
+      setIsSubmitting(false);
     } 
   };
 
-  // automatyczne generowanie loginu na podstawie imienia i nazwiska (np. Jan Kowalski -> j.kowalski)
+
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
     setFullName(name);

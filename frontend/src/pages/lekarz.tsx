@@ -13,7 +13,7 @@ export default function DoctorPanel() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           
-          {/* 1. REJESTRACJA PACJENTA */}
+          {/* REJESTRACJA PACJENTA */}
           <Link 
             to="/dodaj-pacjenta" 
             className="bg-white h-48 rounded-[40px] shadow-xl hover:shadow-2xl transition-all border-l-8 border-blue-500 flex flex-col items-center justify-center text-center group active:scale-95 px-6"
@@ -24,7 +24,7 @@ export default function DoctorPanel() {
             <p className="text-slate-400 font-bold mt-2 uppercase text-xs tracking-widest">Wprowadź do systemu</p>
           </Link>
 
-          {/* 2. AKTUALIZACJA STANU */}
+          {/* AKTUALIZACJA STANU */}
           <Link 
             to="/aktualizuj-status" 
             className="bg-white h-48 rounded-[40px] shadow-xl hover:shadow-2xl transition-all border-l-8 border-emerald-500 flex flex-col items-center justify-center text-center group active:scale-95 px-6"
@@ -35,7 +35,7 @@ export default function DoctorPanel() {
             <p className="text-slate-400 font-bold mt-2 uppercase text-xs tracking-widest">Dodaj wpis na osi czasu</p>
           </Link>
 
-          {/* 3. PANEL RECEPCJI */}
+          {/* PANEL RECEPCJI */}
           <Link 
             to="/recepcja" 
             className="bg-white h-48 rounded-[40px] shadow-xl hover:shadow-2xl transition-all border-l-8 border-amber-500 flex flex-col items-center justify-center text-center group active:scale-95 px-6"
@@ -46,7 +46,7 @@ export default function DoctorPanel() {
             <p className="text-slate-400 font-bold mt-2 uppercase text-xs tracking-widest">Wyszukiwarka i przegląd</p>
           </Link>
 
-          {/* 4. DODAJ PERSONEL */}
+          {/* DODAJ PERSONEL */}
           <Link 
             to="/dodaj-personel" 
             className="bg-slate-800 h-48 rounded-[40px] shadow-xl hover:shadow-2xl transition-all border-l-8 border-purple-500 flex flex-col items-center justify-center text-center group active:scale-95 px-6"

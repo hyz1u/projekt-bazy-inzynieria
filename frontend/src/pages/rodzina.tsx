@@ -32,7 +32,7 @@ export default function FamilyPanel() {
 
     const resetTimer = () => {
       clearTimeout(timeoutId);
-      // Ustawiamy limit na 30 000 ms (30 sekund)
+      // 30 sekund
       timeoutId = setTimeout(() => {
         setPatientData(null);
         setPesel('');
@@ -47,7 +47,6 @@ export default function FamilyPanel() {
     // Startujemy timer od razu po zalogowaniu
     resetTimer();
 
-    // Sprzątanie nasłuchiwaczy przy wylogowaniu lub zamknięciu komponentu
     return () => {
       clearTimeout(timeoutId);
       window.removeEventListener('mousemove', resetTimer);
@@ -62,7 +61,7 @@ export default function FamilyPanel() {
         setLogoutMessage('');
       }, 5000);
 
-      // Sprzątanie timera, jeśli użytkownik np. zaloguje się ponownie przed upływem 5s
+      // reset timera, jeśli użytkownik np. zaloguje się ponownie przed upływem 5s
       return () => clearTimeout(timer);
     }
   }, [logoutMessage]);

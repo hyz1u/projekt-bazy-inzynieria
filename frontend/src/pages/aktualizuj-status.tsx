@@ -84,7 +84,7 @@ export default function UpdateStatus() {
 
       setSuccessMessage('Zapisano nowy status pacjenta.');
       setTimeout(() => {
-        navigate('/lekarz'); // Zmieniłem '/' na '/lekarz', żeby wracało do panelu lekarza
+        navigate('/lekarz');
       }, 2500);
 
     } catch (err: unknown) {
@@ -121,7 +121,7 @@ export default function UpdateStatus() {
         <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-8">
           {error && <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 font-bold">{error}</div>}
 
-          {/* NOWY KROK 1: Wybór pracownika */}
+          {/* Wybór pracownika */}
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">1. Kto wprowadza wpis?</label>
             {isLoading ? (
@@ -143,7 +143,7 @@ export default function UpdateStatus() {
             )}
           </div>
 
-          {/* KROK 2: Wybór pacjenta */}
+          {/* Wybór pacjenta */}
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">2. Kogo dotyczy wpis?</label>
             {isLoading ? (
@@ -163,7 +163,7 @@ export default function UpdateStatus() {
             )}
           </div>
 
-          {/* KROK 3: Wybór statusu */}
+          {/* Wybór statusu */}
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">3. Aktualny stan</label>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -187,7 +187,7 @@ export default function UpdateStatus() {
             </div>
           </div>
 
-          {/* KROK 4: Notatka */}
+          {/* Notatka */}
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">4. Dodatkowe uwagi (opcjonalne)</label>
             <textarea

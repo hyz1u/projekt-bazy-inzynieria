@@ -64,7 +64,7 @@ export default function ReceptionPanel() {
                 maxLength={11}
                 className="w-full p-3 pl-4 bg-slate-100 border-2 border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all font-medium"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value.replace(/\D/g, ''))} // Dopuszczamy tylko cyfry
+                onChange={(e) => setSearchTerm(e.target.value.replace(/\D/g, ''))}
               />
               {searchTerm && (
                 <button 

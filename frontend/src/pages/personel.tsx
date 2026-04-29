@@ -5,7 +5,6 @@ export default function StaffSelection() {
     <div className="min-h-screen bg-slate-100 flex items-center justify-center p-6 font-sans">
       <div className="max-w-md w-full py-10">
         
-        {/* 1. WIDOCZNY TYTUŁ MIEJSCA W RAMCE */}
         <div className="bg-slate-800 p-8 shadow-2xl mb-12 text-center">
           <h1 className="text-3xl font-black text-white uppercase tracking-tighter">
             Panel Personelu
@@ -13,10 +12,10 @@ export default function StaffSelection() {
           <p className="text-slate-400 text-sm mt-1 font-bold">Wybierz swoją rolę</p>
         </div>
 
-        {/* KONTENER PRZYCISKÓW - PIONOWY UKŁAD */}
+        {/* KONTENER PRZYCISKÓW */}
         <div className="flex flex-col">
           
-          {/* 2. LEKARZ - DUŻY KWADRAT (h-64) */}
+          {/* LEKARZ */}
           <Link 
             to="/logowanie" state={{ role: 'DOCTOR', title: 'Lekarza', path: '/lekarz' }} 
             className="bg-white h-64 w-full mb-10 rounded-[48px] shadow-xl hover:shadow-2xl transition-all border-b-8 border-blue-500 flex flex-col items-center justify-center text-center group active:scale-95"
@@ -29,7 +28,7 @@ export default function StaffSelection() {
             </p>
           </Link>
 
-          {/* 4. PIELĘGNIARKA - TERAZ PRZENOSI DO AKTUALIZACJI STATUSU */}
+          {/* PIELĘGNIARKA */}
           <Link 
             to="/logowanie" state={{ role: 'NURSE', title: 'Pielęgniarki', path: '/aktualizuj-status' }} 
             className="bg-white h-64 w-full mb-10 rounded-[48px] shadow-xl hover:shadow-2xl transition-all border-b-8 border-emerald-500 flex flex-col items-center justify-center text-center group active:scale-95"
@@ -42,7 +41,7 @@ export default function StaffSelection() {
             </p>
           </Link>
 
-          {/* 2. RECEPCJA - DUŻY KWADRAT */}
+          {/* RECEPCJA */}
           <Link 
             to="/logowanie" state={{ role: 'RECEPTIONIST', title: 'Recepcji', path: '/recepcja' }}
             className="bg-white h-64 w-full mb-10 rounded-[48px] shadow-xl hover:shadow-2xl transition-all border-b-8 border-amber-500 flex flex-col items-center justify-center text-center group active:scale-95"
@@ -57,7 +56,7 @@ export default function StaffSelection() {
 
         </div>
 
-        {/* 3. PRZYCISK POWROTU - CZERWONY PROSTOKĄT NA DOLE (mt-24 dla dystansu) */}
+        {/* PRZYCISK POWROTU */}
         <div className="mt-24">
           <Link 
             to="/" 
