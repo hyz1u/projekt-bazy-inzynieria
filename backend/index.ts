@@ -53,17 +53,14 @@ app.post('/api/staff/login', async (req, res) => {
 
     const user = await prisma.user.findUnique({ where: { username } });
 
-    // 1. Sprawdzenie, czy użytkownik istnieje
     if (!user) {
       return res.status(401).json({ error: "Nieprawidłowa nazwa użytkownika." });
     }
 
-    // 2. Sprawdzenie hasła (w pełnej wersji użylibyśmy bcrypt, tu sprawdzamy bezpośrednio)
     if (user.passwordHash !== password) {
       return res.status(401).json({ error: "Nieprawidłowe hasło." });
     }
 
-    // 3. Weryfikacja uprawnień do danego panelu
     if (user.role !== expectedRole) {
       return res.status(403).json({ error: "Odmowa dostępu. Twoje konto nie ma uprawnień do tego panelu." });
     }
@@ -152,31 +149,29 @@ app.post('/api/patients', async (req, res) => {
   try {
     const { firstName, lastName, pesel } = req.body;
 
-    // 1. Sprawdzenie, czy pacjent z tym numerem PESEL już istnieje
     const existingPatient = await prisma.patient.findUnique({ where: { pesel } });
     if (existingPatient) {
       return res.status(400).json({ error: "Pacjent o tym numerze PESEL już istnieje w bazie." });
     }
 
-    // 2. Generowanie losowego, 6-znakowego tokenu (tylko duże litery i cyfry)
     const generatedToken = Math.random().toString(36).substring(2, 8).toUpperCase();
+    
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + 14);
 
-    // 3. Zapis do bazy danych
     const newPatient = await prisma.patient.create({
       data: {
         firstName,
         lastName,
         pesel,
-        // Użyj nazwy pola, którą masz w schema.prisma! 
-        // Jeśli masz 'accessCode', zmień poniżej 'token:' na 'accessCode:'
-        accessToken: generatedToken 
+        accessToken: generatedToken,
+        tokenExpires: expirationDate
       }
     });
 
-    // 4. WYMUSZAMY ODESŁANIE TOKENU W CZYTELNY SPOSÓB DO FRONTENDU
     res.json({
       message: "Pacjent pomyślnie zarejestrowany",
-      accessToken: generatedToken, // Gwarantujemy, że token wraca jako 'data.token'
+      accessToken: generatedToken,
       patient: newPatient
     });
 
@@ -189,12 +184,12 @@ app.post('/api/patients', async (req, res) => {
 
 // logowanie rodziny i oś czasu pacjenta
 app.post('/api/family/login', async (req, res) => {
-  const { pesel, token } = req.body;
-
   try {
+    const { pesel, token } = req.body;
+
     const patient = await prisma.patient.findFirst({
       where: { 
-        pesel: pesel, 
+        pesel: pesel,
         accessToken: token 
       },
       include: {
@@ -205,13 +200,18 @@ app.post('/api/family/login', async (req, res) => {
     });
 
     if (!patient) {
-      return res.status(401).json({ error: "Nie znaleziono pacjenta lub wprowadzono błędny token." });
+      return res.status(401).json({ error: "Nieprawidłowy numer PESEL lub kod dostępu." });
     }
 
+    if (patient.tokenExpires && new Date() > new Date(patient.tokenExpires)) {
+      return res.status(403).json({ error: "Twój kod dostępu wygasł po 14 dniach. Jeśli pacjent nadal przebywa na oddziale, zgłoś się do recepcji po nowy kod." });
+    }
+    
     res.json(patient);
+
   } catch (error: unknown) {
-    console.error("Błąd podczas pobierania osi czasu pacjenta:", error);
-    res.status(500).json({ error: "Wystąpił błąd serwera. Spróbuj ponownie później." });
+    console.error("Błąd podczas autoryzacji rodziny:", error);
+    res.status(500).json({ error: "Wystąpił błąd po stronie serwera." });
   }
 });
 
