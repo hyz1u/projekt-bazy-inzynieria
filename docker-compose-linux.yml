@@ -1,0 +1,97 @@
+services:
+ frontend:
+  image: node:25-alpine3.22
+  command: sh -c "rm -rf node_modules && rm -rf package-lock.json && npm install && npm run dev"
+  ports:
+   - 127.0.0.1:5173:5173
+  networks:
+   - hidden
+   - public
+  working_dir: /frontend
+  depends_on:
+   "backend":
+    condition: service_healthy
+   "proxy":
+    condition: service_healthy
+  volumes:
+   - ./frontend:/frontend
+  labels:
+   - "traefik.enable=true"
+   - "traefik.http.routers.frontend.rule=Host(`projekt-bazy-io.docker.localhost`)"
+   - "traefik.http.routers.frontend.entrypoints=web"
+ backend:
+  image: node:25-alpine3.22
+  command: sh -c "rm -rf node_modules && rm -rf package-lock.json && npm install --verbose && npx prisma generate && npx tsx watch index.ts"
+  ports:
+   - 127.0.0.1:3000:3000
+  networks:
+   - hidden
+  depends_on:
+   "db":
+     condition: service_healthy
+  healthcheck:
+   test: ["CMD", "curl", "-f", "http://localhost:3000"]
+   interval: 30s
+   timeout: 10s
+   retries: 5
+   start_period: 200s
+  working_dir: /backend
+  volumes:
+   - ./backend:/backend
+  environment:
+   DATABASE_URL: postgresql://user:pass@127.0.0.1:5432/data?pgbouncer=true
+   DIRECT_URL: postgresql://user:pass@127.0.0.1:5432/data
+ db:
+  image: postgres:18.3-alpine3.23
+  restart: always
+  networks:
+   - hidden
+  volumes:
+   - ./postgres:/var/lib/postgresql/
+  environment:
+   POSTGRES_PASSWORD: pass
+   POSTGRES_USER: user
+   POSTGRES_DB: data
+  healthcheck:
+   test: ["CMD-SHELL", "pg_isready"]
+   interval: 10s
+   timeout: 5s
+   retries: 5
+ proxy:
+  image: traefik:v3.7.0
+  networks:
+   - public
+  restart: unless-stopped
+  security_opt:
+   - no-new-privileges:true
+  ports:
+   - 8080:8080
+   - 80:80
+  healthcheck:
+   test: ["CMD", "traefik", "healthcheck"]
+   interval: 30s
+   timeout: 10s
+   retries: 5
+   start_period: 10s
+  command:
+   - "--providers.docker=true"
+   - "--providers.docker.exposedbydefault=false"
+   - "--providers.docker.network=public"
+   - "--entryPoints.web.address=:80"
+  volumes:
+   - /var/run/docker.sock:/var/run/docker.sock
+
+networks:
+ hidden:
+  name: hidden
+  driver_opts:
+   com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
+   com.docker.network.bridge.host_binding_ipv6: "::"
+   com.docker.network.bridge.name: dockerback
+ public:
+  name: public
+  driver: bridge
+  driver_opts:
+   com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
+   com.docker.network.bridge.host_binding_ipv6: "::"
+   com.docker.network.bridge.name: dockerfront

@@ -1,0 +1,105 @@
+services:
+ frontend:
+  image: node:25-alpine3.22
+  command: sh -c "npm install && npm run dev"
+  ports:
+   - 127.0.0.1:5173:5173
+  container_name: frontend
+  working_dir: /frontend
+  networks:
+   - front
+   - back
+  depends_on:
+   - "backend"
+  labels:
+   - "traefik.enable=true"
+   - "traefik.http.routers.frontend.rule=Host(`projekt-bazy-io.docker.localhost`)"
+   - "traefik.http.routers.frontend.entrypoints=websecure"
+   - "traefik.http.routers.frontend.tls=true"
+  volumes:
+   - ./frontend:/frontend
+ backend:
+  image: node:25-alpine3.22
+  command: sh -c "npm install --verbose && npx prisma generate && npx tsx watch index.ts"
+  ports:
+   - 127.0.0.1:3000:3000
+  networks:
+   - back
+  depends_on:
+   "db":
+     condition: service_healthy
+  working_dir: /backend
+  volumes:
+   - ./backend:/backend
+  environment:
+   DATABASE_URL: postgresql://user:pass@127.0.0.1:5432/data?pgbouncer=true
+   DIRECT_URL: postgresql://user:pass@127.0.0.1:5432/data
+ db:
+  image: postgres:18.3-alpine3.23
+  restart: always
+  networks:
+   - back
+  volumes:
+   - ./postgres:/var/lib/postgresql/
+  environment:
+   POSTGRES_PASSWORD: pass
+   POSTGRES_USER: user
+   POSTGRES_DB: data
+  healthcheck:
+   test: ["CMD-SHELL", "pg_isready"]
+   interval: 10s
+   timeout: 5s
+   retries: 5
+ proxy:
+  image: traefik:v3.7.0
+  restart: unless-stopped
+  security_opt:
+   - no-new-privileges:true
+  depends_on:
+   - "frontend"
+  ports:
+   - 8080:8080
+   - 80:80
+   - 443:443
+  volumes:
+   - ./certs:/certs:ro
+   - ./dynamic:/dynamic:ro
+  healthcheck:
+   test: ["CMD", "traefik", "healthcheck", "--ping"]
+   interval: 30s
+   timeout: 10s
+   retries: 5
+   start_period: 10s
+  command:
+   - "--providers.docker=true"
+   - "--providers.docker.endpoint=tcp://localhost:2375"
+   - "--providers.docker.exposedbydefault=false"
+   - "--providers.docker.network=front"
+   - "--entryPoints.web.address=:80"
+   - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+   - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+   - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+   - "--entrypoints.websecure.address=:443"
+   - "--entrypoints.websecure.http.tls=true"
+   - "--log.format=common"
+   - "--log.level=TRACE"
+   - "--api=true"
+   - "--api.debug=true"
+   - "--api.insecure=true"
+   - "--ping=true"
+   - "--providers.file.filename=/dynamic/tls.yml"
+#  labels:
+#   - "traefik.enable=true"
+#   - "traefik.http.routers.dashboard.rule=Host(`dashboard.docker.localhost`)"
+#   - "traefik.http.routers.dashboard.entrypoints=websecure"
+#   - "traefik.http.routers.dashboard.service=api@internal"
+#   - "traefik.http.routers.dashboard.tls=true"
+#   - "traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$apr1$5bhnamj2$QsGvwYz91QBwaLnNX4kIK1"
+#   - "traefik.http.routers.dashboard.middlewares=dashboard-auth@docker"
+  network_mode: host
+
+networks:
+ front:
+  name: front
+ back:
+  name: back
