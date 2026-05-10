@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { API_ENDPOINTS, APP_TIMEOUTS, ROLES } from '../constants.ts';
 
 export default function AddStaff() {
   const navigate = useNavigate();
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
-  const [role, setRole] = useState('NURSE');
+  const [role, setRole] = useState(ROLES.NURSE);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -17,7 +18,7 @@ export default function AddStaff() {
     setError('');
 
     try {
-      const res = await fetch('http://localhost:3000/api/staff/register', {
+      const res = await fetch(API_ENDPOINTS.STAFF_REGISTER, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ fullName, username, role }),
@@ -29,7 +30,7 @@ export default function AddStaff() {
       setSuccessMessage(`Konto utworzone pomyślnie! Login: ${username}`);
       setTimeout(() => {
         navigate('/lekarz');
-      }, 2500); 
+      }, APP_TIMEOUTS.REDIRECT_SHORT); 
 
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Nieoczekiwany błąd.');
@@ -98,8 +99,8 @@ export default function AddStaff() {
               value={role}
               onChange={(e) => setRole(e.target.value)}
             >
-              <option value="NURSE">Pielęgniarka / Pielęgniarz</option>
-              <option value="RECEPTIONIST">Pracownik Recepcji</option>
+              <option value={ROLES.NURSE}>Pielęgniarka / Pielęgniarz</option>
+              <option value={ROLES.RECEPTIONIST}>Pracownik Recepcji</option>
             </select>
           </div>
 

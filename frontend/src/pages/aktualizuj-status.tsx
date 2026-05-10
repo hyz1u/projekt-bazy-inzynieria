@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { STATUS_MAP } from '../utils.ts';
+import { API_ENDPOINTS, APP_TIMEOUTS, ROLES, STATUS_OPTIONS } from '../constants.ts';
 
 interface PatientInfo {
   id: number;
@@ -15,18 +16,6 @@ interface StaffInfo {
   role: string;
 }
 
-interface StatusOption {
-  id: string;
-  color: string;
-}
-
-const STATUS_OPTIONS: StatusOption[] = [
-  { id: 'STABLE', color: 'bg-emerald-100 text-emerald-800 border-emerald-300' },
-  { id: 'IMPROVING', color: 'bg-blue-100 text-blue-800 border-blue-300' },
-  { id: 'POST_OP', color: 'bg-purple-100 text-purple-800 border-purple-300' },
-  { id: 'AWAITING_TESTS', color: 'bg-amber-100 text-amber-800 border-amber-300' },
-  { id: 'CRITICAL', color: 'bg-red-100 text-red-800 border-red-300' },
-];
 
 export default function UpdateStatus() {
   const navigate = useNavigate();
@@ -46,8 +35,8 @@ export default function UpdateStatus() {
 
   useEffect(() => {
     Promise.all([
-      fetch('http://localhost:3000/api/patients').then(res => res.json()),
-      fetch('http://localhost:3000/api/staff').then(res => res.json())
+      fetch(API_ENDPOINTS.PATIENTS).then(res => res.json()),
+      fetch(API_ENDPOINTS.STAFF).then(res => res.json())
     ])
     .then(([patientsData, staffData]) => {
       setPatients(patientsData);
@@ -69,7 +58,7 @@ export default function UpdateStatus() {
 
     setIsSubmitting(true);
     try {
-      const res = await fetch('http://localhost:3000/api/status', {
+      const res = await fetch(API_ENDPOINTS.STATUS, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -85,7 +74,7 @@ export default function UpdateStatus() {
       setSuccessMessage('Zapisano nowy status pacjenta.');
       setTimeout(() => {
         navigate('/lekarz');
-      }, 2500);
+      }, APP_TIMEOUTS.REDIRECT_SHORT);
 
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Nieoczekiwany błąd.');
@@ -136,7 +125,7 @@ export default function UpdateStatus() {
                 <option value="" disabled>-- Wybierz swoje nazwisko --</option>
                 {staffList.map(staff => (
                   <option key={staff.id} value={staff.id}>
-                    {staff.role === 'DOCTOR' ? 'Lek.' : 'Piel.'} {staff.fullName}
+                   {staff.role === ROLES.DOCTOR ? 'Lek.' : 'Piel.'} {staff.fullName}
                   </option>
                 ))}
               </select>

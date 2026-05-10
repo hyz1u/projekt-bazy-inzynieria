@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { ROLES } from '../constants.ts';
 
 export default function StaffSelection() {
   return (
@@ -17,7 +18,8 @@ export default function StaffSelection() {
           
           {/* LEKARZ */}
           <Link 
-            to="/logowanie" state={{ role: 'DOCTOR', title: 'Lekarza', path: '/lekarz' }} 
+            to="/logowanie" 
+            state={{ role: ROLES.DOCTOR, title: 'Lekarza', path: '/lekarz' }} 
             className="bg-white h-64 w-full mb-10 rounded-[48px] shadow-xl hover:shadow-2xl transition-all border-b-8 border-blue-500 flex flex-col items-center justify-center text-center group active:scale-95"
           >
             <h2 className="text-4xl font-black text-slate-800 group-hover:text-blue-600 transition-colors">
@@ -30,7 +32,8 @@ export default function StaffSelection() {
 
           {/* PIELĘGNIARKA */}
           <Link 
-            to="/logowanie" state={{ role: 'NURSE', title: 'Pielęgniarki', path: '/aktualizuj-status' }} 
+            to="/logowanie" 
+            state={{ role: ROLES.NURSE, title: 'Pielęgniarki', path: '/aktualizuj-status' }}
             className="bg-white h-64 w-full mb-10 rounded-[48px] shadow-xl hover:shadow-2xl transition-all border-b-8 border-emerald-500 flex flex-col items-center justify-center text-center group active:scale-95"
           >
             <h2 className="text-4xl font-black text-slate-800 group-hover:text-emerald-600 transition-colors">
@@ -43,7 +46,8 @@ export default function StaffSelection() {
 
           {/* RECEPCJA */}
           <Link 
-            to="/logowanie" state={{ role: 'RECEPTIONIST', title: 'Recepcji', path: '/recepcja' }}
+            to="/logowanie" 
+            state={{ role: ROLES.RECEPTIONIST, title: 'Recepcji', path: '/recepcja' }}
             className="bg-white h-64 w-full mb-10 rounded-[48px] shadow-xl hover:shadow-2xl transition-all border-b-8 border-amber-500 flex flex-col items-center justify-center text-center group active:scale-95"
           >
             <h2 className="text-4xl font-black text-slate-800 group-hover:text-amber-600 transition-colors">

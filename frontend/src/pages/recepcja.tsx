@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { STATUS_MAP, formatDateTime } from '../utils.ts';
+import { API_ENDPOINTS } from '../constants.ts';
 
-
-// Typ dla pojedynczego wpisu na osi czasu
+// typ dla pojedynczego wpisu na osi czasu
 interface StatusUpdate {
   status: string;
   createdAt: string;
 }
 
-// Typ dla Pacjenta
+// typ dla Pacjenta
 interface Patient {
   id: number;
   firstName: string;
@@ -25,7 +25,7 @@ export default function ReceptionPanel() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/patients')
+    fetch(API_ENDPOINTS.PATIENTS)
       .then(res => res.json())
       .then((data: Patient[]) => {
         setPatients(data);
@@ -38,7 +38,7 @@ export default function ReceptionPanel() {
   }, []);
 
   const filteredPatients = patients.filter((patient) =>
-      patient.pesel.includes(searchTerm)
+    patient.pesel.includes(searchTerm)
   );
 
   return (
@@ -56,7 +56,6 @@ export default function ReceptionPanel() {
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
             <h2 className="text-xl font-bold text-slate-800">Baza zarejestrowanych pacjentów</h2>
             
-            {/* Pole wyszukiwania po numerze PESEL */}
             <div className="relative w-full md:w-72">
               <input
                 type="text"

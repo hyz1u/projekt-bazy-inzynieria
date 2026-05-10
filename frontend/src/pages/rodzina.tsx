@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { STATUS_MAP, formatDateTime } from '../utils.ts';
+import { API_ENDPOINTS, APP_TIMEOUTS } from '../constants.ts';
 
 interface StatusUpdate {
   id: number;
@@ -25,26 +26,25 @@ export default function FamilyPanel() {
   const [logoutMessage, setLogoutMessage] = useState<string>('');
 
   useEffect(() => {
-    // Uruchamiamy timer tylko, gdy rodzina jest zalogowana
+    // uruchamiamy timer tylko, gdy rodzina jest zalogowana
     if (!patientData) return;
 
     let timeoutId: ReturnType<typeof setTimeout>;
 
     const resetTimer = () => {
       clearTimeout(timeoutId);
-      // 30 sekund
       timeoutId = setTimeout(() => {
         setPatientData(null);
         setPesel('');
         setToken('');
         setLogoutMessage('Ze względów bezpieczeństwa zostałeś automatycznie wylogowany po 30 sekundach braku aktywności.');
-      }, 30000);
+      }, APP_TIMEOUTS.FAMILY_AUTO_LOGOUT);
     };
     window.addEventListener('mousemove', resetTimer);
     window.addEventListener('keydown', resetTimer);
     window.addEventListener('click', resetTimer);
 
-    // Startujemy timer od razu po zalogowaniu
+    // startujemy timer od razu po zalogowaniu
     resetTimer();
 
     return () => {
@@ -59,7 +59,7 @@ export default function FamilyPanel() {
     if (logoutMessage) {
       const timer = setTimeout(() => {
         setLogoutMessage('');
-      }, 5000);
+      }, APP_TIMEOUTS.TOAST_MESSAGE);
 
       // reset timera, jeśli użytkownik np. zaloguje się ponownie przed upływem 5s
       return () => clearTimeout(timer);
@@ -73,7 +73,7 @@ export default function FamilyPanel() {
     setIsLoading(true);
 
     try {
-      const res = await fetch('http://localhost:3000/api/family/login', {
+      const res = await fetch(API_ENDPOINTS.FAMILY_LOGIN, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pesel, token }),
@@ -195,7 +195,6 @@ export default function FamilyPanel() {
                   {patientData.updates.map((update, index) => (
                     <div key={update.id} className="relative pl-8 md:pl-10">
                       
-                      {/* Kropka na osi czasu */}
                       <div className={`absolute -left-[14px] top-1 w-6 h-6 rounded-full border-4 border-white shadow-sm
                         ${index === 0 ? 'bg-blue-500 ring-4 ring-blue-100' : 'bg-slate-300'}`} 
                       ></div>

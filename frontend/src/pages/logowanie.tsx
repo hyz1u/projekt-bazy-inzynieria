@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { API_ENDPOINTS, ROLES } from '../constants.ts';
 
 export default function StaffLogin() {
   const location = useLocation();
   const navigate = useNavigate();
   
-  const { role, title, path } = location.state || { role: 'DOCTOR', title: 'Lekarza', path: '/lekarz' };
+  const { role, title, path } = location.state || { role: ROLES.DOCTOR, title: 'Lekarza', path: '/lekarz' };
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -18,7 +19,7 @@ export default function StaffLogin() {
     setIsLoading(true);
 
     try {
-      const res = await fetch('http://localhost:3000/api/staff/login', {
+      const res = await fetch(API_ENDPOINTS.STAFF_LOGIN, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password, expectedRole: role }),
@@ -30,7 +31,7 @@ export default function StaffLogin() {
         throw new Error(data.error || 'Błąd autoryzacji.');
       }
 
-      // Możemy zapisać dane użytkownika w pamięci przeglądarki na później
+      // możemy zapisać dane użytkownika w pamięci przeglądarki na później
       localStorage.setItem('currentUser', JSON.stringify(data.user));
 
       navigate(path);

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { API_ENDPOINTS, APP_TIMEOUTS, VALIDATION } from '../constants.ts';
 
 interface PatientFormData {
   firstName: string;
@@ -19,14 +20,14 @@ export default function AddPatient() {
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (formData.pesel.length !== 11) {
+    if (formData.pesel.length !== VALIDATION.PESEL_LENGTH) {
       setError('Numer PESEL musi mieć dokładnie 11 cyfr.');
       setIsSubmitting(false);
       return;
     }
 
     try {
-      const res = await fetch('http://localhost:3000/api/patients', {
+      const res = await fetch(API_ENDPOINTS.PATIENTS, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -42,7 +43,7 @@ export default function AddPatient() {
       
       setTimeout(() => {
         navigate('/lekarz');
-      }, 8000);
+      }, APP_TIMEOUTS.REDIRECT_LONG);
 
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -59,7 +60,7 @@ export default function AddPatient() {
     if (patientToken) {
       navigator.clipboard.writeText(patientToken);
       setCopied(true);
-      setTimeout(() => setCopied(false), 4000);
+      setTimeout(() => setCopied(false), APP_TIMEOUTS.COPY_SUCCESS);
     }
   };
 
