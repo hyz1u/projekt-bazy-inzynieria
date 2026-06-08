@@ -24,7 +24,6 @@ export default function UpdateStatus() {
   const [error, setError] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
 
-  // Pobieramy TYLKO pacjentów, lista personelu nie jest nam już potrzebna
   useEffect(() => {
     fetch(API_ENDPOINTS.PATIENTS)
       .then(res => res.json())
@@ -41,7 +40,6 @@ export default function UpdateStatus() {
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    // 1. Zabezpieczenie i pobranie zalogowanego użytkownika
     const storedUser = localStorage.getItem('currentUser');
     const currentUser = storedUser ? JSON.parse(storedUser) : null;
 
@@ -64,7 +62,7 @@ export default function UpdateStatus() {
           patientId: selectedPatientId,
           status: selectedStatus,
           note: note,
-          authorId: currentUser.id // <-- AUTOMATYCZNIE PRZYPISUJEMY ID ZALOGOWANEGO UŻYTKOWNIKA
+          authorId: currentUser.id
         }),
       });
 
@@ -73,7 +71,6 @@ export default function UpdateStatus() {
       setSuccessMessage('Zapisano nowy status pacjenta.');
       
       setTimeout(() => {
-        // Warunkowe przekierowanie z poprzedniego kroku
         if (currentUser?.role === ROLES.NURSE) {
           navigate('/personel'); 
         } else {
@@ -115,7 +112,6 @@ export default function UpdateStatus() {
         <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-8">
           {error && <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 font-bold">{error}</div>}
 
-          {/* Punkt 1 to teraz wybór pacjenta! */}
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">1. Kogo dotyczy wpis?</label>
             {isLoading ? (
