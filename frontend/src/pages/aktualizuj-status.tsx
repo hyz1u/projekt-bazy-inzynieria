@@ -10,20 +10,11 @@ interface PatientInfo {
   pesel: string;
 }
 
-interface StaffInfo {
-  id: number;
-  fullName: string;
-  role: string;
-}
-
-
 export default function UpdateStatus() {
   const navigate = useNavigate();
   
   const [patients, setPatients] = useState<PatientInfo[]>([]);
-  const [staffList, setStaffList] = useState<StaffInfo[]>([]);
   
-  const [selectedAuthorId, setSelectedAuthorId] = useState<string>('');
   const [selectedPatientId, setSelectedPatientId] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [note, setNote] = useState<string>('');
@@ -33,25 +24,33 @@ export default function UpdateStatus() {
   const [error, setError] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
 
+  // Pobieramy TYLKO pacjentów, lista personelu nie jest nam już potrzebna
   useEffect(() => {
-    Promise.all([
-      fetch(API_ENDPOINTS.PATIENTS).then(res => res.json()),
-      fetch(API_ENDPOINTS.STAFF).then(res => res.json())
-    ])
-    .then(([patientsData, staffData]) => {
-      setPatients(patientsData);
-      setStaffList(staffData);
-      setIsLoading(false);
-    })
-    .catch(() => {
-      setError("Nie udało się załadować danych z serwera.");
-      setIsLoading(false);
-    });
+    fetch(API_ENDPOINTS.PATIENTS)
+      .then(res => res.json())
+      .then((patientsData) => {
+        setPatients(patientsData);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setError("Nie udało się załadować danych z serwera.");
+        setIsLoading(false);
+      });
   }, []);
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!selectedAuthorId || !selectedPatientId || !selectedStatus) {
+    
+    // 1. Zabezpieczenie i pobranie zalogowanego użytkownika
+    const storedUser = localStorage.getItem('currentUser');
+    const currentUser = storedUser ? JSON.parse(storedUser) : null;
+
+    if (!currentUser || !currentUser.id) {
+      setError('Błąd autoryzacji: Zaloguj się ponownie, aby dodać wpis.');
+      return;
+    }
+
+    if (!selectedPatientId || !selectedStatus) {
       setError('Wypełnij wszystkie wymagane pola.');
       return;
     }
@@ -65,15 +64,21 @@ export default function UpdateStatus() {
           patientId: selectedPatientId,
           status: selectedStatus,
           note: note,
-          authorId: Number(selectedAuthorId) 
+          authorId: currentUser.id // <-- AUTOMATYCZNIE PRZYPISUJEMY ID ZALOGOWANEGO UŻYTKOWNIKA
         }),
       });
 
       if (!res.ok) throw new Error('Błąd komunikacji z serwerem.');
 
       setSuccessMessage('Zapisano nowy status pacjenta.');
+      
       setTimeout(() => {
-        navigate('/lekarz');
+        // Warunkowe przekierowanie z poprzedniego kroku
+        if (currentUser?.role === ROLES.NURSE) {
+          navigate('/personel'); 
+        } else {
+          navigate('/lekarz');   
+        }
       }, APP_TIMEOUTS.REDIRECT_SHORT);
 
     } catch (err: unknown) {
@@ -86,7 +91,7 @@ export default function UpdateStatus() {
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans">
 
-    {successMessage && (
+      {successMessage && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/70 backdrop-blur-md">
           <div className="bg-emerald-500 text-white p-10 md:p-14 rounded-[40px] shadow-2xl border-4 border-emerald-400 max-w-md w-full mx-4 text-center transform scale-100 animate-[pulse_2s_ease-in-out_infinite]">
             <div className="text-7xl mb-6">✓</div>
@@ -110,33 +115,11 @@ export default function UpdateStatus() {
         <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-8">
           {error && <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 font-bold">{error}</div>}
 
-          {/* Wybór pracownika */}
+          {/* Punkt 1 to teraz wybór pacjenta! */}
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">1. Kto wprowadza wpis?</label>
+            <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">1. Kogo dotyczy wpis?</label>
             {isLoading ? (
-              <div className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-500 text-lg">Ładowanie...</div>
-            ) : (
-              <select
-                required
-                className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-xl outline-none text-lg font-medium"
-                value={selectedAuthorId}
-                onChange={(e) => setSelectedAuthorId(e.target.value)}
-              >
-                <option value="" disabled>-- Wybierz swoje nazwisko --</option>
-                {staffList.map(staff => (
-                  <option key={staff.id} value={staff.id}>
-                   {staff.role === ROLES.DOCTOR ? 'Lek.' : 'Piel.'} {staff.fullName}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
-
-          {/* Wybór pacjenta */}
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">2. Kogo dotyczy wpis?</label>
-            {isLoading ? (
-              <div className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-500 text-lg">Ładowanie...</div>
+              <div className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-500 text-lg">Ładowanie bazy pacjentów...</div>
             ) : (
               <select
                 required
@@ -154,7 +137,7 @@ export default function UpdateStatus() {
 
           {/* Wybór statusu */}
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">3. Aktualny stan</label>
+            <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">2. Aktualny stan</label>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {STATUS_OPTIONS.map((option) => {
                 const isSelected = selectedStatus === option.id;
@@ -178,7 +161,7 @@ export default function UpdateStatus() {
 
           {/* Notatka */}
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">4. Dodatkowe uwagi (opcjonalne)</label>
+            <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">3. Dodatkowe uwagi (opcjonalne)</label>
             <textarea
               rows={3}
               placeholder="Zalecenia, uwagi dla rodziny..."
@@ -190,9 +173,9 @@ export default function UpdateStatus() {
 
           <button
             type="submit"
-            disabled={isSubmitting || !selectedAuthorId || !selectedPatientId || !selectedStatus}
+            disabled={isSubmitting || !selectedPatientId || !selectedStatus}
             className={`w-full p-5 rounded-2xl text-xl font-bold text-white shadow-lg transition-all
-              ${(!selectedAuthorId || !selectedPatientId || !selectedStatus) ? 'bg-slate-300' : 'bg-blue-600 hover:bg-blue-700 active:scale-95'}`}
+              ${(!selectedPatientId || !selectedStatus) ? 'bg-slate-300' : 'bg-blue-600 hover:bg-blue-700 active:scale-95'}`}
           >
             {isSubmitting ? 'Zapisywanie...' : 'Zapisz i opublikuj'}
           </button>
